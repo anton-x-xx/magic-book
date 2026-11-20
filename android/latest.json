@@ -1,5 +1,7 @@
 {
-  "versionCode": 12,
-  "versionName": "2.1",
-  "notes": "打开应用时自动检查更新。"
+  "versionCode": 13,
+  "versionName": "2.2",
+  "notes": "顶部可切换全局主题或备份全部词书；词书管理增加恢复备份和更多导出。",
+  "file": "magic-wordbook-2.2.apk",
+  "sha256": "0d6dd6485fdc0c4db7a0eaa4bdc0cab87f5b3614743f4e6c26d7ada07bd3e70a"
 }
