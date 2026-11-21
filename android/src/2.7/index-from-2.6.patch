@@ -1,0 +1,168 @@
+--- a/index.html
++++ b/index.html
+@@ -1282 +1282,10 @@
+-#rv-order{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--edge);border-radius:14px;padding:8px 13px}</style><style>#rv-audio-settings{color:var(--muted);font-size:.88em;margin:6px 0 12px}#rv-audio-settings summary{cursor:pointer;width:fit-content;padding:4px}#rv-audio-settings div{display:flex;flex-wrap:wrap;gap:8px 18px;margin:6px 4px}#rv-audio-settings label{display:inline-flex;align-items:center;gap:4px;min-height:32px}#rv-audio-settings input{accent-color:#805698}body:not([data-book-kind="study"]) #rv-audio-settings{display:none}</style></head>
++#rv-order{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--edge);border-radius:14px;padding:8px 13px}</style><style>#rv-audio-settings{color:var(--muted);font-size:.88em;margin:6px 0 12px}#rv-audio-settings summary{cursor:pointer;width:fit-content;padding:4px}#rv-audio-settings div{display:flex;flex-wrap:wrap;gap:8px 18px;margin:6px 4px}#rv-audio-settings label{display:inline-flex;align-items:center;gap:4px;min-height:32px}#rv-audio-settings input{accent-color:#805698}body:not([data-book-kind="study"]) #rv-audio-settings{display:none}</style><style>
++body.light #header{background:linear-gradient(120deg,rgba(233,219,242,.84),rgba(245,230,239,.78));border-color:#d8c9df}
++body.light #header :is(#count-label,#backup-age){color:#6b5279}
++body.dark #header{background:linear-gradient(120deg,rgba(47,36,65,.92),rgba(29,26,48,.90));border-color:#52435f}
++body.dark #header :is(#count-label,#backup-age){color:#d3c3de}
++#online-books{position:fixed;inset:0;margin:auto;height:fit-content;box-sizing:border-box;width:min(92vw,430px);max-height:82vh;overflow:auto;color:var(--ink);background:var(--paper);border:1px solid var(--edge);padding:18px;border-radius:20px}
++#online-books::backdrop{background:rgba(31,21,42,.44)}
++#online-list>div{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--edge)}
++#online-books button{font:inherit;color:var(--ink);background:var(--paper-alt);border:1px solid var(--edge);border-radius:14px;padding:7px 12px}#online-books button:disabled{opacity:.68}
++</style><style>body[data-book-kind="study"] :is(#filter-bar,#tag-manager,#list .card-cat){display:none!important}</style></head>
+@@ -1311 +1320 @@
+-<dialog id="collection-picker" aria-labelledby="collection-title"><strong id="collection-title">收藏到词书</strong><p id="collection-word"></p><div id="collection-list"></div><p id="collection-message" role="status"></p><footer><button id="collection-cancel" type="button">关闭</button><button id="collection-save" type="button">确认收藏</button></footer></dialog><details id="book-manage"><summary>词书管理</summary><div><button id="book-create">新建个人词本</button><button id="study-import">导入背诵词书</button><input type="file" hidden id="study-file" accept=".json,.csv"><button id="book-rename">当前词书改名</button><button id="book-remove">删除当前词书</button><span data-app-only id="offline-ready" role="status">词库已内置</span><button id="book-import">导入记录并生成新版 HTML</button><details id="more-exports"><summary>更多导出</summary><div><button onclick="exportHTML()">离线网页版（HTML）</button><button onclick="exportCSV()">当前词书表格（CSV）</button></div></details><input hidden type="file" id="book-upload" accept=".json,.html,.htm"></div></details><nav id="review-nav" aria-label="学习视图">
++<dialog id="online-books" aria-labelledby="online-title"><strong id="online-title"></strong><div id="online-list"></div><p id="online-status" role="status"></p><button id="online-close">关闭</button></dialog><dialog id="collection-picker" aria-labelledby="collection-title"><strong id="collection-title">收藏到词书</strong><p id="collection-word"></p><div id="collection-list"></div><p id="collection-message" role="status"></p><footer><button id="collection-cancel" type="button">关闭</button><button id="collection-save" type="button">确认收藏</button></footer></dialog><details id="book-manage"><summary>词书管理</summary><div><button id="book-create">新建个人词本</button><button id="study-import">在线导入词书</button><button id="choose-study">我的词书</button><input type="file" hidden id="study-file" accept=".json,.csv"><button id="book-rename">当前词书改名</button><button id="book-remove">删除当前词书</button><span data-app-only id="offline-ready" role="status">词库已内置</span><button id="book-import">导入记录并生成新版 HTML</button><details id="more-exports"><summary>导出网页版</summary><div><button onclick="exportHTML()">离线网页版（HTML）</button></div></details><input hidden type="file" id="book-upload" accept=".json,.html,.htm"></div></details><nav id="review-nav" aria-label="学习视图">
+@@ -1420 +1429,5 @@
+-activeBook=Object.keys(bookNames)[0];
++const storedActive=recordStore.getItem(filePrefix+'activeBook');
++activeBook=bookNames[storedActive]?storedActive:Object.keys(bookNames)[0];
++let selectedStudy=recordStore.getItem(filePrefix+'selectedStudy');
++if(!bookNames[selectedStudy]||!isStudyBook(selectedStudy))selectedStudy=Object.keys(bookNames).find(isStudyBook);
++if(isStudyBook())selectedStudy=activeBook;
+@@ -1615,2 +1628 @@
+-  var seed=document.getElementById('backup-time-seed');if(seed)seed.textContent=String(backupTimeMemory);
+-  try{recordStore.setItem(filePrefix+'lastBackup',String(backupTimeMemory));}catch(ex){}
++  try{recordStore.setItem(bookKey('lastBackup'),String(backupTimeMemory));}catch(ex){}
+@@ -1619,3 +1631 @@
+-  var stored=0,seed=document.getElementById('backup-time-seed');
+-  try{stored=validBackupTime(recordStore.getItem(filePrefix+'lastBackup'));}catch(ex){}
+-  return Math.max(backupTimeMemory,stored,seed?validBackupTime(seed.textContent):0);
++  return validBackupTime(recordStore.getItem(bookKey('lastBackup')))||validBackupTime(recordStore.getItem(filePrefix+'lastBackup'));
+@@ -1635 +1645 @@
+-  if(button)button.title='备份词条及学习记录'+(timestamp?'（'+detail+'）':'');
++  if(button)button.title='备份「'+bookNames[activeBook]+'」的词条及学习记录'+(timestamp?'（'+detail+'）':'');
+@@ -2593,0 +2604 @@
++   updateBackupBar();
+@@ -2612,0 +2624,3 @@
++   recordStore.setItem(filePrefix+'activeBook',name);
++   if(isStudyBook(name)){selectedStudy=name;recordStore.setItem(filePrefix+'selectedStudy',name);}
++   renderShelf();
+@@ -2632,0 +2647,2 @@
++   if(!bookNames[selectedStudy])selectedStudy=Object.keys(bookNames).find(isStudyBook);
++   el('choose-study').hidden=!selectedStudy;
+@@ -2633,0 +2650 @@
++     if(isStudyBook(id)&&id!==selectedStudy)continue;
+@@ -2689,4 +2706,29 @@
+- el('study-import').onclick=()=>{if(editingBook()){showToast('请先保存或取消编辑');return;}el('study-file').click();};
+- el('study-file').onchange=async event=>{
+-   const file=event.target.files[0];if(!file)return;
+-   let id;
++ const titles=['四级真题核心词','四级英语词汇','六级真题核心词','六级英语词汇','考研必考词汇','考研英语词汇'];
++ const counts=[1162,3739,1228,2078,1341,4533];
++ let busy=-1;
++ const picker=el('online-books'),list=el('online-list'),statusLine=el('online-status');
++ function showBooks(online){
++   el('online-title').textContent=online?'在线导入词书':'我的词书';
++   list.replaceChildren();
++   const ids=online?titles.map((_,i)=>'study-fee0-'+i):Object.keys(bookNames).filter(isStudyBook);
++   ids.forEach((id,i)=>{
++     const row=document.createElement('div'),label=document.createElement('span'),btn=document.createElement('button');
++     label.textContent=online?titles[i]+' · '+counts[i]+' 词':bookNames[id];
++     const installed=!!bookNames[id];
++     btn.textContent=online?(installed?'已导入':busy===i?'下载中…':'下载'):(id===selectedStudy?'当前词书':'切换');
++     btn.disabled=online?(installed||busy>=0):false;
++     btn.onclick=online?()=>downloadBook(i):()=>{switchBook(id);picker.close();};
++     row.append(label,btn);list.append(row);
++   });
++ }
++ function openBooks(online){
++   if(editingBook()){showToast('请先保存或取消编辑');return;}
++   statusLine.textContent='';showBooks(online);picker.showModal();
++ }
++ el('study-import').onclick=()=>openBooks(true);
++ el('choose-study').onclick=()=>openBooks(false);
++ el('online-close').onclick=()=>picker.close();
++ async function downloadBook(i){
++   const id='study-fee0-'+i;
++   if(busy>=0||bookNames[id])return;
++   busy=i;showBooks(true);statusLine.textContent='正在下载「'+titles[i]+'」…';
+@@ -2694,5 +2736,9 @@
+-     const book=parseStudyFile(await file.text(),/\.csv$/i.test(file.name));
+-     const name=(await bookDialog('导入背诵词书',book.words.length+' 个词条 · 导入后可背诵和收藏，词条只读。','导入',file.name.replace(/\.[^.]+$/,'')))?.trim();
+-     if(!name)return;
+-     if(Object.values(bookNames).includes(name))throw Error('已有同名词书，请换一个名称');
+-     id='study-'+Array.from(crypto.getRandomValues(new Uint32Array(3)),n=>n.toString(16)).join('-');
++     const bridge=window.ElainaBooks;
++     if(!bridge||!bridge.start(i))throw Error('下载暂时不可用，请重试');
++     while(bridge.status()===1)await new Promise(resolve=>setTimeout(resolve,180));
++     if(bridge.status()!==2)throw Error('未能下载，请检查网络后重试');
++     let text='',chunk;
++     while((chunk=bridge.part(text.length)))text+=chunk;
++     const book=parseStudyFile(text,false);
++     if(book.words.length!==counts[i])throw Error('词书不完整，请重试');
++     const first=!isStudyBook()&&!recordStore.getItem(filePrefix+'selectedStudy')&&!Object.keys(bookNames).some(k=>k.startsWith('study-'));
+@@ -2700 +2745,0 @@
+-     recordStore.setItem(bookPrefix(id,'pb-custom-tags-v1'),JSON.stringify(book.tags));
+@@ -2702,6 +2747,9 @@
+-     if(!storeNames({...bookNames,[id]:name}))throw Error('保存词书失败');
+-     libraryBooks[id]=book;renderShelf();switchBook(id);setView('book');
+-   }catch(e){if(id&&!bookNames[id])for(const k of recordKeys())if(k.startsWith(bookPrefix(id,'')))recordStore.removeItem(k);showToast(e instanceof SyntaxError?'无法读取词书 JSON':e.message);}
+-   finally{event.target.value='';}
+- };
+-
++     if(!storeNames({...bookNames,[id]:titles[i]}))throw Error('保存词书失败');
++     libraryBooks[id]=book;
++     if(first)switchBook(id);
++     renderShelf();statusLine.textContent='已导入「'+titles[i]+'」';showToast(statusLine.textContent);
++   }catch(error){
++     if(!bookNames[id])for(const key of recordKeys())if(key.startsWith(bookPrefix(id,'')))recordStore.removeItem(key);
++     statusLine.textContent=error.message;
++   }finally{window.ElainaBooks?.clear();busy=-1;if(el('online-title').textContent==='在线导入词书')showBooks(true);}
++ }
+@@ -2727 +2775,4 @@
+-   const data={format:'magic-wordbook',version:1,names:bookNames,books:collectBooks()};
++   saveSession();snapshotCurrent();
++   const data={format:'magic-wordbook',version:2,names:{[activeBook]:bookNames[activeBook]},books:{[activeBook]:libraryBooks[activeBook]}};
++   const filename=bookNames[activeBook].replace(/[\\/:*?"<>|]/g,'_')+'_备份_'+new Date().toISOString().slice(0,10)+'.json';
++   if(window.ElainaDevice?.save){ElainaDevice.save(filename,JSON.stringify(data));return;}
+@@ -2730 +2781 @@
+-   const a=document.createElement('a');a.href=url;a.download='魔法单词本_学习记录_'+new Date().toISOString().slice(0,10)+'.json';
++   const a=document.createElement('a');a.href=url;a.download=filename;
+@@ -2735 +2786 @@
+-   let books,names;
++   let books,names,active,study;
+@@ -2742,2 +2793,2 @@
+-     if(data.format!=='magic-wordbook'||data.version!==1)throw Error();
+-     books=data.books;names=data.names;
++     if(data.format!=='magic-wordbook'||![1,2].includes(data.version))throw Error();
++     books=data.books;names=data.names;active=data.activeBook;study=data.selectedStudy;
+@@ -2756 +2807 @@
+-   return {books,names:labels};
++   return {books,names:labels,active:ids.includes(active)?active:null,study:ids.includes(study)&&isStudyBook(study)?study:null};
+@@ -2758 +2809 @@
+- if(installedApp)el('book-import').textContent='恢复备份';
++ if(installedApp)el('book-import').textContent='恢复词书备份';
+@@ -2760,2 +2811,19 @@
+-   const counts=Object.entries(data.books).map(([id,b])=>data.names[id]+'　'+b.words.length+' 个词条').join('\n');
+-   if(!await bookDialog('导入学习记录',counts+'\n\n确认用这份备份替换当前词书和学习记录？','确认导入'))return;
++   const ids=Object.keys(data.books).filter(id=>isStudyBook(id)===isStudyBook());
++   if(!ids.length){await bookDialog('词书类型不同',isStudyBook()?'请切到个人单词本后恢复这份备份。':'请切到背诵词书后恢复这份备份。');return;}
++   let id=ids[0];
++   if(ids.length>1){
++     const choice=document.createElement('select');
++     for(const key of ids)choice.add(new Option(data.names[key],key));
++     if(ids.includes(activeBook))choice.value=activeBook;
++     const dialog=el('online-books');
++     el('online-title').textContent='选择要恢复的词书';el('online-list').replaceChildren(choice);
++     el('online-status').textContent='';const confirm=document.createElement('button');confirm.textContent='选择这本';el('online-list').append(confirm);
++     let chosen;confirm.onclick=()=>{chosen=choice.value;dialog.close();};
++     const closed=new Promise(resolve=>dialog.addEventListener('close',resolve,{once:true}));dialog.showModal();await closed;
++     if(!chosen)return;id=chosen;
++   }
++   const counts=data.names[id]+'　'+data.books[id].words.length+' 个词条';
++   const action=bookNames[id]?'替换手机上「'+bookNames[id]+'」的词条和进度':'将这本词书加入书架';
++   if(!await bookDialog('恢复词书备份',counts+'\n'+action+'，并打开「'+data.names[id]+'」。其他词书会保留。','确认恢复'))return;
++   saveSession();
++   data={names:{...bookNames,[id]:data.names[id]},books:{[id]:data.books[id]},active:id,study:isStudyBook(id)?id:selectedStudy};
+@@ -2768,0 +2837,5 @@
++     for(const key of recordKeys()){
++       if(!key.startsWith(filePrefix)||key.startsWith(bookPrefix(id,'')))continue;
++       const value=recordStore.getItem(key);
++       if(value!==null)put(key.slice(filePrefix.length),value);
++     }
+@@ -2769,0 +2843,2 @@
++     if(data.active)put('activeBook',data.active);
++     if(data.study)put('selectedStudy',data.study);

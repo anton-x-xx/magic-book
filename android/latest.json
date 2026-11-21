@@ -1,7 +1,7 @@
 {
-  "versionCode": 17,
-  "versionName": "2.6",
-  "notes": "背诵词书中点熟练自动朗读当前词，完成标记有轻提示音，两项都可在声音设置中关闭。",
-  "file": "magic-wordbook-2.6.apk",
-  "sha256": "a11f3c3fb77b91e0555734bb72ffcf61ab0eca7a977f668da30fce1ec546c850"
+  "versionCode": 19,
+  "versionName": "2.7",
+  "notes": "新增六本在线词书、独立学习进度和单本备份恢复。背诵词书列表移除分类，优化昼夜配色与词书弹窗。",
+  "file": "magic-wordbook-2.7.apk",
+  "sha256": "c8ec7567603676bb55e16aa486b29d880332aa798a9dac8918a54dccaa668f48"
 }
