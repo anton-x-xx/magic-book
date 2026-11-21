@@ -1,7 +1,7 @@
 {
-  "versionCode": 16,
-  "versionName": "2.5",
-  "notes": "达标后可继续背新词，分享卡更新实际学习词数。按本地零点换日，加学的新词也在次日复习。",
-  "file": "magic-wordbook-2.5.apk",
-  "sha256": "de80201c1e72bb881fa2c9b98dc76a2429a481f91c660a65fd557303dad625eb"
+  "versionCode": 17,
+  "versionName": "2.6",
+  "notes": "背诵词书中点熟练自动朗读当前词，完成标记有轻提示音，两项都可在声音设置中关闭。",
+  "file": "magic-wordbook-2.6.apk",
+  "sha256": "a11f3c3fb77b91e0555734bb72ffcf61ab0eca7a977f668da30fce1ec546c850"
 }
