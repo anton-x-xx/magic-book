@@ -1,7 +1,7 @@
 {
-  "versionCode": 28,
-  "versionName": "2.16",
-  "notes": "新增离线英文详解、例句点词查询和滑动返回。支持连同原句收藏、最近查词、撤销上一次熟悉度标记，并区分复习与新词进度。",
-  "file": "magic-wordbook-2.16.apk",
-  "sha256": "c383232dba2f0e708bc066347ccbf9e8583e82d299dc08da18dd79fc9af5a7dd"
+  "versionCode": 29,
+  "versionName": "3.0",
+  "notes": "版本号升级至 3.0，功能与 2.16 一致。",
+  "file": "magic-wordbook-3.0.apk",
+  "sha256": "7ec3dddec68086b61219df5df65c3e3b1693d9af00089bf1cc59a644683d8d99"
 }
