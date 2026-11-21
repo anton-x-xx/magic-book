@@ -1,7 +1,7 @@
 {
-  "versionCode": 29,
-  "versionName": "3.0",
-  "notes": "版本号升级至 3.0，功能与 2.16 一致。",
-  "file": "magic-wordbook-3.0.apk",
-  "sha256": "7ec3dddec68086b61219df5df65c3e3b1693d9af00089bf1cc59a644683d8d99"
+  "versionCode": 31,
+  "versionName": "3.1",
+  "notes": "首次使用默认红宝书，个人词本为空。点击熟练打开详细释义，点击例句单词时朗读并显示简释。",
+  "file": "magic-wordbook-3.1.apk",
+  "sha256": "1a86e896c3daeb1d23e1a3ed39420496a544cb3b52dbe7630f03d0f5f3906723"
 }
