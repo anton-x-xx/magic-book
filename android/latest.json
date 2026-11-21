@@ -1,7 +1,7 @@
 {
-  "versionCode": 21,
-  "versionName": "2.9",
-  "notes": "为红宝书及六本在线背诵词书补充中英例句。已下载的词书可离线补齐例句，保留背诵进度。",
-  "file": "magic-wordbook-2.9.apk",
-  "sha256": "07ada76531376c3c6c5b0182942afc56c127259068e1a92afca080cd812d4ec6"
+  "versionCode": 28,
+  "versionName": "2.16",
+  "notes": "新增离线英文详解、例句点词查询和滑动返回。支持连同原句收藏、最近查词、撤销上一次熟悉度标记，并区分复习与新词进度。",
+  "file": "magic-wordbook-2.16.apk",
+  "sha256": "c383232dba2f0e708bc066347ccbf9e8583e82d299dc08da18dd79fc9af5a7dd"
 }
