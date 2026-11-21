@@ -1,0 +1,22 @@
+--- a/index.html
++++ b/index.html
+@@ -2802,2 +2802,3 @@
+      if(!b.words.every(w=>Number.isSafeInteger(w.id)&&typeof w.phrase==='string'&&['meaning','hook','category'].every(k=>w[k]==null||typeof w[k]==='string')&&['sentences','relatedPhrases','wordFamily'].every(k=>w[k]==null||Array.isArray(w[k])&&w[k].every(item=>item&&Object.values(item).every(v=>typeof v==='string')))))throw Error();
++     if(new Set(b.words.map(word=>word.id)).size!==b.words.length)throw new RangeError('词条编号重复');
+      if(!b.tags.every(t=>typeof t.name==='string'&&/^[a-zA-Z0-9_-]+$/.test(t.id)))throw Error();
+@@ -2810,4 +2811,3 @@
+  async function restoreApp(data){
+-   const ids=Object.keys(data.books).filter(id=>isStudyBook(id)===isStudyBook());
+-   if(!ids.length){await bookDialog('词书类型不同',isStudyBook()?'请切到个人单词本后恢复这份备份。':'请切到背诵词书后恢复这份备份。');return;}
++   const ids=Object.keys(data.books);
+    let id=ids[0];
+@@ -2815,3 +2815,3 @@
+      const choice=document.createElement('select');
+-     for(const key of ids)choice.add(new Option(data.names[key],key));
++     for(const key of ids)choice.add(new Option(data.names[key]+(isStudyBook(key)?"（背诵词书）":"（个人词本）"),key));
+      if(ids.includes(activeBook))choice.value=activeBook;
+@@ -2864,3 +2864,3 @@
+    try{const data=readTransfer(await file.text());if(installedApp)await restoreApp(data);else writePortable(data);}
+-   catch(error){showToast('无法读取，请选本应用导出的 JSON 或双词书及以后版本的 HTML 备份');}
++   catch(error){showToast(error instanceof RangeError && error.message==='词条编号重复'?'备份中的词条编号重复，请选择完整的备份文件。':'无法读取，请选本应用导出的 JSON 或双词书及以后版本的 HTML 备份');}
+    finally{input.value='';}

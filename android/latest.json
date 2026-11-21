@@ -1,7 +1,7 @@
 {
-  "versionCode": 19,
-  "versionName": "2.7",
-  "notes": "新增六本在线词书、独立学习进度和单本备份恢复。背诵词书列表移除分类，优化昼夜配色与词书弹窗。",
-  "file": "magic-wordbook-2.7.apk",
-  "sha256": "c8ec7567603676bb55e16aa486b29d880332aa798a9dac8918a54dccaa668f48"
+  "versionCode": 20,
+  "versionName": "2.8",
+  "notes": "备份可从任意词书页面恢复，删除最后一本词书后也能找回进度。恢复前检查同一本书是否有重复词条编号。",
+  "file": "magic-wordbook-2.8.apk",
+  "sha256": "8bd4ad85be0c5cdee01876472ec0c621cbcc8cab42f6f73c6943f0380ffde3da"
 }
