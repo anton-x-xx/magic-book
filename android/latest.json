@@ -1,7 +1,7 @@
 {
-  "versionCode": 13,
-  "versionName": "2.2",
-  "notes": "顶部可切换全局主题或备份全部词书；词书管理增加恢复备份和更多导出。",
-  "file": "magic-wordbook-2.2.apk",
-  "sha256": "0d6dd6485fdc0c4db7a0eaa4bdc0cab87f5b3614743f4e6c26d7ada07bd3e70a"
+  "versionCode": 14,
+  "versionName": "2.3",
+  "notes": "完成红宝书今日计划，伊蕾娜会骑扫帚庆祝。点「分享打卡」即可分享当天的随机旅行明信片。",
+  "file": "magic-wordbook-2.3.apk",
+  "sha256": "07eb9e418edac501bd0e4c9d5015589e630cb02bf83e4ad3c8e3621294bdcc6c"
 }
