@@ -1,7 +1,7 @@
 {
-  "versionCode": 20,
-  "versionName": "2.8",
-  "notes": "备份可从任意词书页面恢复，删除最后一本词书后也能找回进度。恢复前检查同一本书是否有重复词条编号。",
-  "file": "magic-wordbook-2.8.apk",
-  "sha256": "8bd4ad85be0c5cdee01876472ec0c621cbcc8cab42f6f73c6943f0380ffde3da"
+  "versionCode": 21,
+  "versionName": "2.9",
+  "notes": "为红宝书及六本在线背诵词书补充中英例句。已下载的词书可离线补齐例句，保留背诵进度。",
+  "file": "magic-wordbook-2.9.apk",
+  "sha256": "07ada76531376c3c6c5b0182942afc56c127259068e1a92afca080cd812d4ec6"
 }
