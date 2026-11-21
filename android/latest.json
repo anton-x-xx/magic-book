@@ -1,7 +1,7 @@
 {
-  "versionCode": 14,
-  "versionName": "2.3",
-  "notes": "完成红宝书今日计划，伊蕾娜会骑扫帚庆祝。点「分享打卡」即可分享当天的随机旅行明信片。",
-  "file": "magic-wordbook-2.3.apk",
-  "sha256": "07eb9e418edac501bd0e4c9d5015589e630cb02bf83e4ad3c8e3621294bdcc6c"
+  "versionCode": 15,
+  "versionName": "2.4",
+  "notes": "区分个人词本与只读背诵词书；支持导入独立词书，背诵可按顺序或乱序，每本书记住选择。",
+  "file": "magic-wordbook-2.4.apk",
+  "sha256": "a9f4a28800c013a6a59bc75be299d08c2077ce8076a489ee3a43699605720f12"
 }
