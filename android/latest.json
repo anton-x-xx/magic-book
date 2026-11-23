@@ -1,7 +1,7 @@
 {
-  "versionCode": 31,
-  "versionName": "3.1",
-  "notes": "首次使用默认红宝书，个人词本为空。点击熟练打开详细释义，点击例句单词时朗读并显示简释。",
-  "file": "magic-wordbook-3.1.apk",
-  "sha256": "1a86e896c3daeb1d23e1a3ed39420496a544cb3b52dbe7630f03d0f5f3906723"
+  "versionCode": 47,
+  "versionName": "3.17",
+  "notes": "首页四张插画每日轮换，优化夜间文字清晰度、中文查词和例句展示。",
+  "file": "magic-wordbook-3.17.apk",
+  "sha256": "ea4b804a1419dd116241f1b8fa60ed75bee94ca9e27f5d2070c46d31728c37e7"
 }
