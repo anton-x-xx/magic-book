@@ -1,0 +1,48 @@
+name: Upload Android 3.28 APK
+on:
+  push:
+    paths:
+      - '.github/workflows/upload-apk-3-28.yml'
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify and assemble the original signed APK
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import shutil
+          from pathlib import Path
+          staging = Path('.apk-upload/3.28')
+          apk = b''.join((staging / name).read_bytes() for name in ['part-0', 'part-1'])
+          expected = 'cf17409747058445058e61c20376818ac10e2778c5b12480578da190c9bd1257'
+          assert hashlib.sha256(apk).hexdigest() == expected, 'APK checksum mismatch'
+          Path('android/magic-wordbook-3.28.apk').write_bytes(apk)
+          latest = {
+              'versionCode': 58,
+              'versionName': '3.28',
+              'notes': '优化词典释义和单词本搜索，新增列表下拉查词及最长90天的递增复习间隔，支持不认识自动朗读。',
+              'file': 'magic-wordbook-3.28.apk',
+              'sha256': expected,
+          }
+          Path('android/latest.json').write_text(json.dumps(latest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          readme = Path('README.md')
+          text = readme.read_text(encoding='utf-8')
+          text += '\n[下载 Android 3.28 APK](https://github.com/anton-x-xx/magic-book/raw/refs/heads/main/android/magic-wordbook-3.28.apk)\n'
+          readme.write_text(text, encoding='utf-8')
+          shutil.rmtree('.apk-upload')
+          Path('.github/workflows/upload-apk-3-28.yml').unlink()
+          PY
+      - name: Commit APK and remove temporary upload files
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- android/magic-wordbook-3.28.apk android/latest.json README.md .apk-upload .github/workflows/upload-apk-3-28.yml
+          git commit -m "上传 Android 3.28 签名安装包并更新下载入口"
+          git push origin HEAD:main
