@@ -1,0 +1,332 @@
+--- index-3.17.html
++++ index-3.28.html
+@@ -1366,0 +1367,13 @@
++#detail-search #lookup{display:block!important;width:100%;box-sizing:border-box}
++#detail-search{max-width:700px;margin:auto;padding:12px}
++.study-tab-pane .synonym-entry{display:grid;gap:2px;text-align:start;background:transparent;color:var(--ink);border:0;border-bottom:1px solid var(--edge);border-radius:0;width:100%;padding:8px 0;font:inherit}
++.study-tab-pane .synonym-entry small{font-size:.92em;color:var(--muted);line-height:1.45}
++
++#word-page .local-detail .wiki-example + .wiki-example {
++  padding-top: 0.55rem;
++  border-top: 1px solid var(--edge);
++}
++
++#rv-answer .rv-meaning{white-space:pre-line}
++#rv-defer{margin-inline-start:8px;font-size:.85em}
++#rv-defer[hidden]{display:none!important}
+@@ -1465,3 +1478,3 @@
+-  <details id="rv-audio-settings"><summary>声音设置</summary><div><label><input type="checkbox" id="rv-auto-speak" checked> 标记熟练时朗读</label><label><input type="checkbox" id="rv-soft-tone" checked> 完成提示音</label></div></details>
+-  </details><div id="rv-card"><span id="rv-status"></span><div class="rv-prompt"><div id="rv-word" class="rv-editable" aria-label="编辑单词或短语" data-placeholder="单词或短语" tabindex="0" role="button"></div><button type="button" class="word-audio" aria-label="播放英文发音" title="播放英文发音">🔊</button><div id="rv-companion" data-mood="neutral" role="img" aria-label="伊蕾娜骑着扫帚飞行"><div class="rv-flight"><div class="rv-sprite"></div></div><span class="rv-magic" aria-hidden="true">✦</span></div></div><button type="button" class="rv-btn rv-primary" id="rv-reveal" aria-expanded="false" aria-controls="rv-answer">显示释义与例句</button><div id="rv-answer" hidden=""></div></div>
+-  <div id="rv-postcard-bar" hidden><span>今日目标达成 ✓</span><button class="rv-btn" id="rv-postcard-open">分享打卡</button></div><div class="rv-actions"><button type="button" id="rv-unknown" class="rv-btn rv-unknown" data-ready="false">☆ 不熟悉</button><button type="button" id="rv-known" class="rv-btn rv-known" data-ready="false">✓ 熟练</button></div>
++  <details id="rv-audio-settings"><summary>声音设置</summary><div><label><input type="checkbox" id="rv-auto-speak" checked> 点认识或不认识时朗读</label><label><input type="checkbox" id="rv-soft-tone" checked> 完成提示音</label></div></details>
++  </details><div id="rv-card"><span id="rv-status"></span><div class="rv-prompt"><div id="rv-word" class="rv-editable" aria-label="编辑单词或短语" data-placeholder="单词或短语" tabindex="0" role="button"></div><button type="button" class="word-audio" aria-label="播放英文发音" title="播放英文发音">🔊</button><div id="rv-companion" data-mood="neutral" role="img" aria-label="伊蕾娜骑着扫帚飞行"><div class="rv-flight"><div class="rv-sprite"></div></div><span class="rv-magic" aria-hidden="true">✦</span></div></div><button type="button" class="rv-btn rv-primary" id="rv-reveal" aria-expanded="false" aria-controls="rv-answer">显示释义与例句</button><button type="button" id="rv-defer" class="rv-btn" title="延长复习间隔" hidden>熟练</button><div id="rv-answer" hidden=""></div></div>
++  <div id="rv-postcard-bar" hidden><span>今日目标达成 ✓</span><button class="rv-btn" id="rv-postcard-open">分享打卡</button></div><div class="rv-actions"><button type="button" id="rv-unknown" class="rv-btn rv-unknown" data-ready="false">☆ 不认识</button><button type="button" id="rv-known" class="rv-btn rv-known" data-ready="false">✓ 认识</button></div>
+@@ -2010,0 +2024,21 @@
++function bookMatches(query){
++ const compact=normalizeSearch(query);
++ const candidates=entries.filter(e=>filterCat===ALL_TAGS||(e.category||'')===filterCat);
++ if(!compact)return candidates;
++ if(!/^[a-z0-9]+$/.test(compact))return candidates.filter(e=>matchesSearch(e,query));
++ const tokens=value=>String(value||'').normalize('NFKC').toLowerCase().normalize('NFD')
++   .replace(/[\u0300-\u036f]/g,'').replace(/['’]/g,'').match(/[a-z0-9]+/g)||[];
++ const exact=[],phrases=[];
++ for(const entry of candidates){
++   const words=tokens(entry.phrase);
++   if(normalizeSearch(entry.phrase)===compact){exact.push(entry);continue;}
++   // Compare complete, consecutive words so hyphens and spaces are interchangeable.
++   if(words.some((word,start)=>{
++     let joined=word;
++     for(let i=start+1;joined.length<compact.length&&i<words.length;i++)joined+=words[i];
++     return joined===compact;
++   }))phrases.push(entry);
++ }
++ return exact.concat(phrases);
++}
++
+@@ -2048 +2082 @@
+-  var filtered=entries.filter(function(e){return matchesSearch(e,q)&&(filterCat===ALL_TAGS||(e.category||"")===filterCat);});
++  var filtered=bookMatches(q);
+@@ -2292 +2326 @@
+-  var filtered=entries.filter(function(e){return matchesSearch(e,q)&&(filterCat===ALL_TAGS||(e.category||"")===filterCat);});
++  var filtered=bookMatches(q);
+@@ -2430 +2464 @@
+-     label('魔法单词本',.5,.956,.028);
++
+@@ -2477 +2511 @@
+- const reviewIntervals=[1,3,7,15,30,60];
++ const legacyIntervals=[0,1,3,7,15,30,60];
+@@ -2500 +2534 @@
+- function scheduleRecord(old,value,time){
++ function scheduleRecord(old,value,time,fluent=false){
+@@ -2505,5 +2539,14 @@
+-   const previous=Number.isInteger(old?.step)?old.step:0;
+-   const base=old?.lastDay===day?(old.baseStep??0):previous;
+-   record.baseStep=base;record.lastDay=day;
+-   record.step=value==='unknown'?0:Math.min(base+1,reviewIntervals.length);
+-   record.dueDay=day+(record.step?reviewIntervals[record.step-1]:1);
++   let base=0;
++   if(old?.lastDay===day){
++     base=old.baseInterval??legacyIntervals[old.baseStep]??0;
++   }else if(old?.status==='known'){
++     base=Math.max(1,dueDay(old)-(old.lastDay??localDay(old.updatedAt)));
++   }
++   let interval=1;
++   if(value==='known'){
++     if(base===0)interval=fluent?5:1;
++     else interval=fluent?Math.max(7,base*3):Math.max(3,base*2);
++   }
++   record.baseInterval=base;
++   record.lastDay=day;
++   record.dueDay=day+Math.min(90,interval);
+@@ -2535 +2578 @@
+-  current=entries.find(function(e){return e.id===s.currentId;});
++  current=entries.find(function(e){return e.id===s.currentId;});if(records[current.id]?.pauseUntil>localDay()){current=null;return false;}
+@@ -2574 +2617 @@
+- function pool(){var scope=el('rv-scope').value;return entries.filter(function(e){return scope==='all'||status(e)===scope;});}
++ function pool(){var scope=el('rv-scope').value;return entries.filter(function(e){return !(records[e.id]?.pauseUntil>localDay())&&(scope==='all'||status(e)===scope);});}
+@@ -2647 +2690 @@
+- function drawCard(){el('rv-extra').hidden=true;checkPostcard();el('rv-goal').hidden=!dailyMode();var has=!!current;el('save-to-reading').hidden=!hasCollectionTarget()||!has;if(!has||selectedId!==current.id){selectedAction=null;selectedId=null;}el('rv-word').onclick=null;el('rv-word').onkeydown=null;el('rv-word').classList.remove('rv-editable');el('rv-word').removeAttribute('tabindex');el('rv-word').removeAttribute('role');bindReviewWord(has);el('rv-word').nextElementSibling.hidden=!has;el('rv-reveal').hidden=!has;el('rv-answer').hidden=true;el('rv-answer').textContent='';el('rv-reveal').textContent='显示释义与例句';el('rv-reveal').setAttribute('aria-expanded','false');['rv-known','rv-unknown'].forEach(function(id){el(id).disabled=!has;});el('rv-progress').textContent=has?'本轮 '+shown+' / '+roundTotal+(isStudyBook()?' · 不熟悉词复习':' · 随机不重复'):'';el('rv-word').textContent=has?current.phrase:(entries.length?'这个范围暂时没有词条':'单词本还是空的');el('rv-status').textContent=has?({known:'✓ 已标记熟练',unknown:'☆ 已标记不熟悉',new:'尚未标记'}[status(current)]):(entries.length?'切换范围，或去单词本标记词条':'点击右上角「＋ 添加」开始');if(dailyMode()){
++ function drawCard(){el('rv-extra').hidden=true;checkPostcard();el('rv-goal').hidden=!dailyMode();var has=!!current;el('save-to-reading').hidden=!hasCollectionTarget()||!has;if(!has||selectedId!==current.id){selectedAction=null;selectedId=null;}el('rv-word').onclick=null;el('rv-word').onkeydown=null;el('rv-word').classList.remove('rv-editable');el('rv-word').removeAttribute('tabindex');el('rv-word').removeAttribute('role');bindReviewWord(has);el('rv-defer').hidden=!has||!isStudyBook();el('rv-word').nextElementSibling.hidden=!has;el('rv-reveal').hidden=!has;el('rv-answer').hidden=true;el('rv-answer').textContent='';el('rv-reveal').textContent='显示释义与例句';el('rv-reveal').setAttribute('aria-expanded','false');['rv-known','rv-unknown'].forEach(function(id){el(id).disabled=!has;});el('rv-progress').textContent=has?'本轮 '+shown+' / '+roundTotal+(isStudyBook()?' · 不熟悉词复习':' · 随机不重复'):'';el('rv-word').textContent=has?current.phrase:(entries.length?'这个范围暂时没有词条':'单词本还是空的');el('rv-status').textContent=has?({known:'✓ 已标记熟练',unknown:'☆ 已标记不熟悉',new:'尚未标记'}[status(current)]):(entries.length?'切换范围，或去单词本标记词条':'点击右上角「＋ 添加」开始');if(dailyMode()){
+@@ -2703 +2746 @@
+- function updateActionButtons(){el('rv-known').dataset.ready=String(selectedAction==='known');el('rv-unknown').dataset.ready=String(selectedAction==='unknown');const advance=dailyMode()&&selectedAction&&dailyWork(localDay()).goalMet&&dailyWork(localDay()).word?'继续背 →':'下一个 →';el('rv-known').textContent=selectedAction==='known'?advance:'✓ 熟练';el('rv-unknown').textContent=selectedAction==='unknown'?advance:selectedAction==='known'?'记错了':'☆ 不熟悉';}
++ function updateActionButtons(){el('rv-known').dataset.ready=String(selectedAction==='known');el('rv-unknown').dataset.ready=String(selectedAction==='unknown');const advance=dailyMode()&&selectedAction&&dailyWork(localDay()).goalMet&&dailyWork(localDay()).word?'继续背 →':'下一个 →';el('rv-known').textContent=selectedAction==='known'?advance:'✓ 认识';el('rv-unknown').textContent=selectedAction==='unknown'?advance:selectedAction==='known'?'记错了':'☆ 不认识';}
+@@ -2725 +2768 @@
+-   if(value==='known'&&el('rv-auto-speak').checked)el('rv-word').nextElementSibling.click();
++   if(el('rv-auto-speak').checked)el('rv-word').nextElementSibling.click();
+@@ -2734 +2777,2 @@
+- function chooseAction(value){
++ el('rv-defer').onclick=()=>chooseAction('known',true);
++ function chooseAction(value,defer=false){
+@@ -2737 +2781 @@
+-  if(selectedId===current.id&&selectedAction===value){next(false);keepStudyStartVisible(el('rv-word'));return;}
++  if(!defer&&selectedId===current.id&&selectedAction===value){next(false);keepStudyStartVisible(el('rv-word'));return;}
+@@ -2741 +2785,11 @@
+-  selectedId=current.id;selectedAction=value;mark(current.id,value);
++  selectedId=current.id;selectedAction=value;
++  if(defer){
++   const old=records[current.id];
++   const record=scheduleRecord(old,'known',Math.max(Date.now(),(old?.updatedAt||0)+1),true);
++   record.pauseUntil=record.dueDay;
++   records[current.id]=record;save();
++   undo.after=record.updatedAt;lastMark=undo;el('rv-undo').hidden=false;
++   studyDays[day]=true;checkPostcard(true);next(false);
++   showToast('移除本轮');return;
++  }
++  mark(current.id,value);
+@@ -3349,0 +3404,4 @@
++function studyPos(raw){
++ const key=raw.trim().toLowerCase().split(/[-\s]/)[0];
++ return ({noun:'n.',n:'n.',verb:'v.',v:'v.',phrasal:'v.',adjective:'a.',adj:'a.',adverb:'adv.',adv:'adv.',preposition:'prep.',prep:'prep.',pronoun:'pron.',pron:'pron.',conjunction:'conj.',conj:'conj.',determiner:'det.',det:'det.',interjection:'interj.',exclamation:'interj.'})[key]||'';
++}
+@@ -3364 +3422 @@
+-   if(en||zh||examples.length)senses.push({en,zh,examples});
++   if(en||zh||examples.length)senses.push({en,zh,examples,pos:studyPos(text(n.closest('.ldoceEntry')?.querySelector('.Head .lm5pp_POS,.Head .POS')))});
+@@ -3367 +3425 @@
+-  const seen=new Set();
++  const seen=new Map();
+@@ -3372,0 +3431 @@
++    if(node.matches('.cn_txt')&&!zh)zh=text(node);
+@@ -3381,2 +3440,12 @@
+-   const key=JSON.stringify([en,zh||example?.zh]);
+-   if(en&&!seen.has(key)){seen.add(key);tabs['搭配'].push({en,zh,example});}
++   if(!en)continue;
++   const sense=form.closest('.Sense');
++   const context=text(sense?.querySelector('.DEF .cn_txt'));
++   const key=en.toLowerCase();
++   const variants=seen.get(key)||[];
++   const prior=variants.find(row=>row.zh===zh||!row.zh||!zh);
++   if(prior){
++    prior.zh||=zh;prior.example||=example;prior.context||=context;
++   }else{
++    const row={en,zh,example,context};
++    variants.push(row);seen.set(key,variants);tabs['搭配'].push(row);
++   }
+@@ -3384 +3453,17 @@
+-  tabs['词源']=items('.etym');
++  const languages={'Old English':'古英语','Middle English':'中古英语','English':'英语','Old French':'古法语','Middle French':'中古法语','French':'法语','Late Latin':'晚期拉丁语','Medieval Latin':'中世纪拉丁语','Latin':'拉丁语','Greek':'希腊语','Old Norse':'古诺尔斯语','Italian':'意大利语','German':'德语','Dutch':'荷兰语','Arabic':'阿拉伯语','Spanish':'西班牙语','Japanese':'日语','Sanskrit':'梵语','Portuguese':'葡萄牙语'};
++  tabs['词源']=[];
++  for(const etym of doc.querySelectorAll('.etym')){
++   for(const sense of etym.querySelectorAll('.Sense')){
++    const original=text(sense);
++    if(!original)continue;
++    const language=text(sense.querySelector('.LANG'));
++    const lang=languages[language]||language;
++    const date=text(sense.querySelector('.CENTURY')).replace(/[()]/g,'');
++    const forms=[...sense.querySelectorAll('.ORIGIN')].map(text);
++    const plain=clean(sense,'.CENTURY,.LANG,.ORIGIN').trim();
++    const simple=!plain&&lang&&forms.length===1;
++    const zh=simple?'源自'+lang+'的 '+forms[0]:[lang&&'来源语言：'+lang,forms.length&&'相关原词：'+forms.join('、')].filter(Boolean).join('；');
++    tabs['词源'].push({zh:[date&&'年代：'+date,zh].filter(Boolean).join('。'),original});
++   }
++   if(!etym.querySelector('.Sense')&&text(etym))tabs['词源'].push({original:text(etym)});
++  }
+@@ -3389 +3474 @@
+-   senses.push({en:clean(cap,'.num,.st,.def_cn,.anchor'),zh:text(cap?.querySelector('.def_cn')),examples});
++   senses.push({pos:studyPos(text(cap?.querySelector('.st'))),en:clean(cap,'.num,.st,.def_cn,.anchor'),zh:text(cap?.querySelector('.def_cn')),examples});
+@@ -3405,0 +3491,41 @@
++const familyGlosses={guilt:'名词 · 内疚，自责；罪责',guilty:'形容词 · 内疚的；有罪的','guilt-ridden':'形容词 · 深感内疚的，满怀自责的',guiltily:'副词 · 内疚地，心虚地',guiltiness:'名词 · 内疚感；有罪'};
++const supplementalPhrases={
++ 'dimension of':'……的一个方面或维度',
++ 'add a new/an extra/another etc dimension (to something)':'给某事物增添新的或额外的层面',
++ 'political/social/economic etc dimension':'政治、社会或经济等方面',
++ 'add/give/bring a new etc dimension to something':'给某事物增添新的层面',
++ 'have a new/social etc dimension':'具有新的、社会性的等方面或特征',
++ 'take on a new/extra etc dimension':'呈现出新的或额外的层面',
++ 'a new/different dimension':'一个新的或不同的角度',
++ 'an extra/added/additional/further dimension':'一个额外的层面',
++ 'a social/political/cultural dimension':'社会、政治或文化层面',
++ 'a moral/ethical dimension':'道德或伦理层面',
++ 'a spiritual dimension':'精神层面',
++ 'the human dimension':'涉及人的因素或层面',
++ 'an international dimension':'国际层面',
++ 'recommend (that)':'建议……（后接从句）',
++ 'recommend doing something':'建议做某事',
++ 'recommend somebody to do something':'建议某人做某事',
++ 'recommend something to somebody':'向某人推荐某物',
++ 'recommend something for something/somebody':'推荐某物用于某种用途，或推荐适合某人的东西',
++ 'recommend somebody for something':'推荐某人担任某职务或成为某项荣誉的候选人',
++ 'highly/thoroughly recommend':'强烈推荐',
++ 'highly recommend':'强烈推荐',
++ 'heartily recommend':'热诚推荐',
++ 'thoroughly recommend':'十分推荐',
++ 'definitely/certainly recommend':'肯定会推荐',
++ 'personally recommend':'我个人推荐'
++};
++function collocationGloss(value,entry){
++ if(/[\u3400-\u9fff]/.test(value.zh||''))return value.zh;
++ const key=value.en.trim().toLowerCase();
++ const phrase=entry.relatedPhrases?.find(row=>row.phrase?.trim().toLowerCase()===key&&/[\u3400-\u9fff]/.test(row.meaning||''));
++ if(phrase)return phrase.meaning;
++ if(Object.hasOwn(supplementalPhrases,key))return supplementalPhrases[key];
++ const match=exampleEntry(key);
++ if(match?.[0]?.toLowerCase()===key&&/[一-龥]/.test(match[2]))return match[2].split('\n').find(line=>/[一-龥]/.test(line));
++ return '';
++}
++function translatedCollocations(items,entry){
++ return items.filter(item=>item?.en).map(item=>({...item,zh:collocationGloss(item,entry)})).filter(item=>item.zh);
++}
+@@ -3408 +3534,2 @@
+- for(const book of books)for(const [label,values] of Object.entries(book.tabs)){
++ for(const book of books)for(const [label,items] of Object.entries(book.tabs)){
++  const values=label==='搭配'?translatedCollocations(items,entry):items;
+@@ -3412 +3539 @@
+-  const values=(rows||[]).map(x=>[x.phrase||x.word,x.meaning].filter(Boolean).join('　')).filter(Boolean);
++  const values=label==='搭配'?translatedCollocations((rows||[]).map(x=>({en:x.phrase,zh:x.meaning})),entry):(rows||[]).map(x=>[x.phrase||x.word,x.meaning].filter(Boolean).join('　')).filter(Boolean);
+@@ -3425,2 +3552,2 @@
+-    if(value.zh)textNode(group,'p',value.zh,'collocation-zh');
+-    else if(value.example){
++    textNode(group,'p',value.zh,'collocation-zh');
++    if(value.example){
+@@ -3432 +3559,29 @@
+-   }else if(label==='词族'&&section.source!=='词书')appendExample(pane,{en:value},null);
++   }else if(label==='近义词'){
++    const row=exampleEntry(value);
++    const button=textNode(pane,'button','','synonym-entry');
++    button.type='button';
++    textNode(button,'span',value);
++    const brief=textNode(button,'small',(row?.[2]||'').split(/\r?\n/).find(line=>/[\u3400-\u9fff]/.test(line))||'');
++    if(!brief.textContent)localEntries(value).then(books=>{
++     brief.textContent=books.flatMap(book=>book.senses).find(s=>s.zh)?.zh||'暂无中文简释';
++    }).catch(()=>{brief.textContent='暂无中文简释';});
++    button.onclick=()=>openLookup(row||[value,'',''],button);
++   }else if(label==='词族'&&section.source!=='词书'){
++    const row=textNode(pane,'div','','collocation-row');
++    const found=exampleEntry(value);
++    const exact=found&&lookupKey(found[0])===lookupKey(value);
++    const gloss=(Object.hasOwn(familyGlosses,value)&&familyGlosses[value])||entry.wordFamily?.find(item=>lookupKey(item.word||'')===lookupKey(value))?.meaning||
++     (exact&&found[2]?.split(/\r?\n/).find(line=>/[一-龥]/.test(line)));
++    appendExample(row,{en:value,zh:gloss||''},null);
++    if(!gloss){
++     const note=textNode(row,'small','正在查询中文释义…');
++     localEntries(value).then(books=>{
++      note.textContent=books.flatMap(book=>book.senses).find(s=>s.zh)?.zh||'离线词典暂无中文释义';
++     }).catch(()=>{note.textContent='离线词典暂无中文释义';});
++    }
++   }else if(label==='词源'&&typeof value==='object'){
++    if(value.zh)textNode(pane,'p',value.zh);
++    const original=textNode(pane,value.zh?'details':'div','');
++    if(value.zh)textNode(original,'summary','词源原文');
++    appendExample(original,{en:value.original},null);
++   }
+@@ -3435 +3590 @@
+-  textNode(pane,'small',section.source);
++  textNode(pane,'small',label==='搭配'?'搭配来源：'+section.source:section.source);
+@@ -3475,2 +3630,6 @@
+- const brief=[...new Set(matched.filter(s=>s.source===matched[0]?.source).map(s=>s.zh))].slice(0,3).join('；');
+- const display={...entry,meaning:brief||entry.meaning,sentences:examples,relatedPhrases:[],wordFamily:[]};
++ const brief=[...new Set(matched.filter(s=>s.source===matched[0]?.source).map(s=>[s.pos,s.zh].filter(Boolean).join(' ')))].slice(0,3).join('\n');
++ const lexical=exampleEntry(entry.phrase);
++ const fallback=entry.meaning||'';
++ const hasPos=/\b(?:n|v|vt|vi|a|adj|adv|prep|pron|conj)\b/i;
++ const labeled=lexical&&lookupKey(lexical[0])===lookupKey(entry.phrase)&&hasPos.test(lexical[2])?lexical[2]:'';
++ const display={...entry,meaning:brief||(hasPos.test(fallback)?fallback:labeled||fallback),sentences:examples,relatedPhrases:[],wordFamily:[]};
+@@ -3578,0 +3738 @@
++   hideDetailSearch();
+@@ -3596,0 +3757 @@
++   if(hideDetailSearch())return;
+@@ -3954,0 +4116,65 @@
++ const detailSearch=document.createElement('section');
++ detailSearch.id='detail-search';detailSearch.hidden=true;
++ wordScroll.prepend(detailSearch);
++ const lookupBox=el('lookup');
++ let previousQuery='';
++ function hideDetailSearch(){
++  if(detailSearch.hidden)return false;
++  detailSearch.hidden=true;
++  searchPage.append(lookupBox);
++  lookupInput.value=previousQuery;
++  showSuggestions();
++  wordContent.hidden=false;
++  wordBack.focus({preventScroll:true});
++  return true;
++ }
++ const searchHint=pullHint.cloneNode(false);
++ searchHint.hidden=true;
++ wordPage.append(searchHint);
++ function bindSearchPull(surface,searchHint,eligible,openSearch){
++ let detailStart=null;
++ function cancelDetailPull(){detailStart=null;searchHint.hidden=true;}
++ window.addEventListener('blur',cancelDetailPull);
++ surface.addEventListener('touchcancel',cancelDetailPull);
++ surface.addEventListener('touchstart',event=>{
++  cancelDetailPull();
++  if(!eligible()||event.touches.length!==1||event.target.closest('input,textarea,select,[contenteditable=true],.drag-handle'))return;
++  const touch=event.touches[0];
++  detailStart={x:touch.clientX,y:touch.clientY,tracking:false};
++ },{passive:true});
++ surface.addEventListener('touchmove',event=>{
++  if(!detailStart)return;
++  if(event.touches.length!==1||!eligible()){cancelDetailPull();return;}
++  const touch=event.touches[0],dx=touch.clientX-detailStart.x,dy=touch.clientY-detailStart.y;
++  if(Math.max(Math.abs(dx),Math.abs(dy))<8&&!detailStart.tracking)return;
++  if(dy<=Math.abs(dx)*1.35){cancelDetailPull();return;}
++  detailStart.tracking=true;
++  if(event.cancelable)event.preventDefault();
++  searchHint.hidden=false;
++  searchHint.style.left=Math.max(90,Math.min(innerWidth-90,touch.clientX))+'px';
++  searchHint.style.setProperty('--depth',(24+16*Math.min(1,dy/detailDistance))+'px');
++  searchHint.textContent=detailReady(dx,dy)?'松开查词':'下拉查词';
++ },{passive:false});
++ surface.addEventListener('touchend',event=>{
++  const start=detailStart;cancelDetailPull();
++  if(!start?.tracking||event.touches.length||!eligible())return;
++  const touch=event.changedTouches[0];
++  if(!detailReady(touch.clientX-start.x,touch.clientY-start.y))return;
++  event.preventDefault();
++  openSearch();
++ },{passive:false});
++ return cancelDetailPull;
++ }
++ const resetDetailSearchPull=bindSearchPull(wordPage,searchHint,()=>detailSearch.hidden&&wordScroll.scrollTop<=1,()=>{
++  previousQuery=lookupInput.value;
++  detailSearch.append(lookupBox);
++  wordContent.hidden=true;detailSearch.hidden=false;
++  lookupInput.value='';showRecent();lookupInput.focus();
++ });
++ wordPage.addEventListener('close',()=>{hideDetailSearch();resetDetailSearchPull();});
++ const bookHint=searchHint.cloneNode(false);
++ document.body.append(bookHint);
++ bindSearchPull(document,bookHint,()=>home.hidden&&view==='book'&&
++  !document.querySelector('dialog[open]')&&!editingBook()&&
++  (document.scrollingElement?.scrollTop||window.scrollY||0)<=1,
++  ()=>{searchPage.showModal();lookupInput.focus();});
