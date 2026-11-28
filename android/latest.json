@@ -1,7 +1,7 @@
 {
-  "versionCode": 47,
-  "versionName": "3.17",
-  "notes": "首页四张插画每日轮换，优化夜间文字清晰度、中文查词和例句展示。",
-  "file": "magic-wordbook-3.17.apk",
-  "sha256": "ea4b804a1419dd116241f1b8fa60ed75bee94ca9e27f5d2070c46d31728c37e7"
+  "versionCode": 58,
+  "versionName": "3.28",
+  "notes": "优化词典释义和单词本搜索，新增列表下拉查词及最长90天的递增复习间隔，支持不认识自动朗读。",
+  "file": "magic-wordbook-3.28.apk",
+  "sha256": "cf17409747058445058e61c20376818ac10e2778c5b12480578da190c9bd1257"
 }
